@@ -16,7 +16,7 @@ $(BUILDDIR)/%.o: %.c $(wildcard *.h)
 	$(CC) -c $(CFLAGS) $< -o $@
 
 $(APPNAME): $(OBJECTS)
-	$(CC) $(OBJECTS) -o $(APPNAME)
+	$(CC) $(OBJECTS) -lm -o $(APPNAME)
 
 clean:
 	rm -f $(BUILDDIR)/*.o $(APPNAME)
