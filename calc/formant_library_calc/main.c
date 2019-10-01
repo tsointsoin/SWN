@@ -2,7 +2,8 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/malloc.h>
+#include <stdint.h>
+//#include <sys/malloc.h>
 #include <errno.h>
 #include <ctype.h>
 #include <sys/types.h>

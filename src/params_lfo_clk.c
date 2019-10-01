@@ -87,7 +87,7 @@ void read_ext_clk(void)
 
 					lfos.period[REF_CLK] = test_period;
 					lfos.cycle_pos[REF_CLK] = 0;
-					
+
 					//lfos.inc[REF_CLK] = calc_lfo_inc(lfos.period[REF_CLK]);
 					flag_all_lfos_recalc();
 				}

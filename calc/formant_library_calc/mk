@@ -27,5 +27,5 @@ do
     OBJ="$OBJ $obj"
 done
 
-gcc $OBJ -o ./make-waveform-library || { echo "FAILED"; exit 1; }
+gcc $OBJ -lm -o ./make-waveform-library || { echo "FAILED"; exit 1; }
 
