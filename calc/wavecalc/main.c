@@ -21,7 +21,7 @@
 #endif
 
 // GLOBAL
-#define FILE_TABLELEN 		256 	// FixMe: This must be set to match the wav files read, but ideally should be detected in the wav file
+#define FILE_TABLELEN 		512 	// FixMe: This must be set to match the wav files read, but ideally should be detected in the wav file
 #define	WT_DIM_SIZE	3
 #define OSC_OUTPUT_TABLELEN 512
 #define LFO_OUTPUT_TABLELEN 256
