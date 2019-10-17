@@ -14,15 +14,14 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <float.h>
-#include <dirent.h> 
-
+#include <dirent.h>
 
 #ifndef M_PI
-#define M_PI           3.14159265358979323846 
+#define M_PI           3.14159265358979323846
 #endif
 
 // GLOBAL
-#define FILE_TABLELEN 		512 	// FixMe: This must be set to match the wav files read, but ideally should be detected in the wav file
+#define FILE_TABLELEN 		256 	// FixMe: This must be set to match the wav files read, but ideally should be detected in the wav file
 #define	WT_DIM_SIZE	3
 #define OSC_OUTPUT_TABLELEN 512
 #define LFO_OUTPUT_TABLELEN 256
@@ -37,10 +36,10 @@ const char default_osc_lfo[] 		= "OSC";
 
 
 char do_smoothing 			= 0;
-char do_remove_DC_offset 	= 0;
-char do_cosine_window 		= 0;
+char do_remove_DC_offset	 	= 0;
+char do_cosine_window 			= 0;
 char do_normalize 			= 0;
-	
+
 char DEBUG_PRINT_ALL_SAMPLES = 0;
 
 
@@ -149,9 +148,9 @@ int main(int argc, char *argv[])
 	int 		l 		= 0;
 	int 		dof 	= 0; 			// degree of freedom: x,y,z
 	int 		read 	= 0;
-	float 		inc;	
+	float 		inc;
 	float 		sum_buf;
-	float 		temp[FILE_TABLELEN];	
+	float 		temp[FILE_TABLELEN];
 	float 		output[FILE_TABLELEN];
 	float* 		buff[FILE_TABLELEN];
 	uint32_t 	header_buf[HEADERLEN];
@@ -201,10 +200,10 @@ int main(int argc, char *argv[])
 		add_slash(input_wav_dir);
 		strcat(input_wav_dir, spherename);
 		add_slash(input_wav_dir);
-	}	
+	}
 
 	// Extract output dir from args, or use default
-	if (argc>2 && argv[2][0]) { 
+	if (argc>2 && argv[2][0]) {
 		strcpy(output_filename, argv[2]);
 	}
 	else {
@@ -231,7 +230,7 @@ int main(int argc, char *argv[])
 
 
 	// OSCILLATOR // LFO
-	if 		(strcmp (osc_lfo, "OSC") == 0){OUTPUT_TABLELEN = OSC_OUTPUT_TABLELEN; bitdepth_adj = 0.0; 	  bitdepth_gain = 1.0;}	
+	if 		(strcmp (osc_lfo, "OSC") == 0){OUTPUT_TABLELEN = OSC_OUTPUT_TABLELEN; bitdepth_adj = 0.0; 	  bitdepth_gain = 1.0;}
 	else if (strcmp (osc_lfo, "LFO") == 0){OUTPUT_TABLELEN = LFO_OUTPUT_TABLELEN; bitdepth_adj = 126.0;   bitdepth_gain = 255.0 / 65535.0;}
 
 
@@ -253,17 +252,19 @@ oscillator / lfo: %s\n", input_wav_dir, spherename, output_filename, table_autho
 
 
 	// FIXME: ADD BACKUP BEFORE MOVING
-		
+
 	// REMOVE PREVIOUS WAVEFORM FILES FROM FOLDER
 	//system("exec rm -r ../waveforms/*.h");
+
+
 
 	// MAKE COSINE WINDOW
 	float cosine_window[FILE_TABLELEN];
 	for (i=0; i<FILE_TABLELEN; i++){
-		cosine_window[i] = sin(i*M_PI/(FILE_TABLELEN-1)); 
-		cosine_window[i] *= cosine_window[i]; 
+		cosine_window[i] = sin(i*M_PI/(FILE_TABLELEN-1));
+		cosine_window[i] *= cosine_window[i];
 	}
-	
+
 	//WIDEN COSINE WINDOW
 	int cosine_gain = 100;
 	for (i=0; i<FILE_TABLELEN; i++){
@@ -273,36 +274,36 @@ oscillator / lfo: %s\n", input_wav_dir, spherename, output_filename, table_autho
 
 /*
 	// PLOT WINDOW
-						
+
 		//Write data to temporary file
 		FILE * gnuplotPipe = popen ("gnuplot -persistent", "w");
 		for (i=0; i < FILE_TABLELEN; i++){
-			fprintf(tempb, "%d %lf \n", i, cosine_window[i]); 
+			fprintf(gnuplotPipe, "%d %lf \n", i, cosine_window[i]);
 		}
-	
+
 		//Send commands to gnuplot one by one.
 		for (i=0; i < NUM_COMMANDS; i++){
-			fprintf(gnuplotPipe, "%s \n", commandsForGnuplot[i]); 
+			fprintf(gnuplotPipe, "%s \n", commandsForGnuplot[i]);
 		}
-*/
 
+*/
 
 	// LARGEST WAVETABLE DIMENSION AVAILABLE
 	// OPEN FOLDER
 	d = opendir(input_wav_dir);
 	if (d){
-	
+
 		// SCAN WAV-FILES IN FOLDER
 		while ((dir = readdir(d)) != NULL){
-		
-			// SKIP OSX FILES 
+
+			// SKIP OSX FILES
 			// osx-related files and non-wav
 			char * end = strrchr(dir->d_name, '.');
 			if ( (strcmp(dir->d_name,".") !=0 ) && (strcmp(dir->d_name,"..") !=0) && (strcmp(dir->d_name,".DS_Store") !=0)  && (strcmp(end, ".wav") == 0) ){
 				l+=1;
 			}
 		}
-	} else 
+	} else
 	{
 		printf("\n\nError: input_wav_dir cannot be opened\n\n");
 		exit(0);
@@ -323,20 +324,19 @@ oscillator / lfo: %s\n", input_wav_dir, spherename, output_filename, table_autho
 	printf("\n Number of banks: %u \n", wavetable[0].num_banks);
 	printf("#####################################################################\n\n");
 	closedir(d);
-	
-			
+
 	// OPEN FOLDER
 	d = opendir(input_wav_dir);
 	if (d){
-	
+
 		// SCAN WAV-FILES IN FOLDER
 		while ((dir = readdir(d)) != NULL){
-		
-			// SKIP OSX FILES 
+
+			// SKIP OSX FILES
 			// osx-related files and non-wav
 			char * end = strrchr(dir->d_name, '.');
 			if ( (strcmp(dir->d_name,".") !=0 ) && (strcmp(dir->d_name,"..") !=0) && (strcmp(dir->d_name,".DS_Store") !=0)  && (strcmp(end, ".wav") == 0) ){
-			
+
 				// ASSIGN COORDINATES
 				wavetable[l].coordinates[0]=cx;
 				wavetable[l].coordinates[1]=cy;
@@ -344,7 +344,7 @@ oscillator / lfo: %s\n", input_wav_dir, spherename, output_filename, table_autho
 				wavetable[l].coordinates[3]=cbank;
 				printf("--------------------------------");
 				printf("(%d: %d%d%d)",wavetable[l].coordinates[3],wavetable[l].coordinates[0],wavetable[l].coordinates[1],wavetable[l].coordinates[2]);
-				printf("--------------------------------\n");		
+				printf("--------------------------------\n");
 
 				// SAVE FILE NAME AS WAVEFORM NAME
 				strcpy(wavetable[l].name, dir->d_name);
@@ -359,19 +359,19 @@ oscillator / lfo: %s\n", input_wav_dir, spherename, output_filename, table_autho
 				}
 
 				// READ HEADER
-				// 44 bytes <=> 352 bits)	
+				// 44 bytes <=> 352 bits)
 				// code from: http://truelogic.org/wordpress/2015/09/04/parsing-a-wav-file-in-c/
 				 printf("HEADER: \n");
 				 read = fread(header[k].riff, sizeof(header[k].riff), 1, ptr);
-				 printf("(1-4): %s \n", header[k].riff); 
+				 printf("(1-4): %s \n", header[k].riff);
 
 				 read = fread(buffer4, sizeof(buffer4), 1, ptr);
 				 printf("%#x %#x %#x %#x\n", buffer4[0], buffer4[1], buffer4[2], buffer4[3]);
 
 				 // convert little endian to big endian 4 byte int
-				 header[k].overall_size  = buffer4[0] | 
-										  (buffer4[1]<<8) | 
-										  (buffer4[2]<<16) | 
+				 header[k].overall_size  = buffer4[0] |
+										  (buffer4[1]<<8) |
+										  (buffer4[2]<<16) |
 									  	  (buffer4[3]<<24);
 
 				 printf("(5-8) Overall size: bytes:%u, Kb:%u \n", header[k].overall_size, header[k].overall_size/1024);
@@ -455,14 +455,14 @@ oscillator / lfo: %s\n", input_wav_dir, spherename, output_filename, table_autho
 									  (buffer4[2] << 16) | 
 									  (buffer4[3] << 24 );
 				 printf("(41-44) Size of data chunk: %u \n", header[k].data_size);
-			
+
 				 // calculate no.of samples
 				 long num_samples = (8 * header[k].data_size) / (header[k].channels * header[k].bits_per_sample);
 				 printf("Number of samples:%lu \n", num_samples);
 
 				 long size_of_each_sample = (header[k].channels * header[k].bits_per_sample) / 8;
 				printf("Size of each sample:%ld bytes\n\n", size_of_each_sample);
-			
+
 				// READ ONE WAVETABLE LENGHT WORTH OF WAVEFILE
 				// read each sample from data chunk if PCM
 				printf("DATA:");
@@ -483,7 +483,7 @@ oscillator / lfo: %s\n", input_wav_dir, spherename, output_filename, table_autho
 					// unsigned char data_buffer[bytes_in_each_channel];
 					unsigned char data_buffer[24];
 
-					if (size_is_correct) { 
+					if (size_is_correct) {
 						// the valid amplitude range for values based on the bits per sample
 						long low_limit = 0l;
 						long high_limit = 0l;
@@ -507,13 +507,13 @@ oscillator / lfo: %s\n", input_wav_dir, spherename, output_filename, table_autho
 								break;
 							}
 						printf("\nValid range for data values : %ld to %ld \n", low_limit, high_limit);
-					
-						// Skip 10x table lenght worth of samples 
+
+						// Skip 10x table lenght worth of samples
 						// skips attack and potential blanks
 						// for (i =0; i < 10*FILE_TABLELEN; i++) {
 						// 	read = fread(data_buffer, sizeof(data_buffer), 1, ptr);
 						// }
-					
+
 						// read one table length worh of samples
 						// FIXME: repeat this section a couple times
 
@@ -528,7 +528,7 @@ oscillator / lfo: %s\n", input_wav_dir, spherename, output_filename, table_autho
  								// printf("channel %d of %d\n",xchannels, header[k].channels);
 
 								if (read == 1){
-	
+
 									// dump the data read for 1 channel
 									if (xchannels == 0){
 
@@ -537,9 +537,9 @@ oscillator / lfo: %s\n", input_wav_dir, spherename, output_filename, table_autho
 
 										if (bytes_in_each_channel == 4) {
 											data_in_channel =	(int32_t)
-																(data_buffer[0] 		| 
-																(data_buffer[1] << 8) 	| 
-																(data_buffer[2] << 16) 	| 
+																(data_buffer[0] 		|
+																(data_buffer[1] << 8) 	|
+																(data_buffer[2] << 16) 	|
 																(data_buffer[3] << 24) );
 
 											if (DEBUG_PRINT_ALL_SAMPLES) printf("%02x%02x%02x%02x = %d\n", data_buffer[3], data_buffer[2], data_buffer[1], data_buffer[0], data_in_channel);
@@ -547,7 +547,7 @@ oscillator / lfo: %s\n", input_wav_dir, spherename, output_filename, table_autho
 										else if (bytes_in_each_channel == 3) {
 											data_in_channel = (int32_t)
 																((data_buffer[0] <<8)	|
-																(data_buffer[1] << 16) 	| 
+																(data_buffer[1] << 16) 	|
 																(data_buffer[2] << 24) );
 
 											data_in_channel = data_in_channel/(1<<8); //32 to 24 bit conversion
@@ -556,7 +556,7 @@ oscillator / lfo: %s\n", input_wav_dir, spherename, output_filename, table_autho
 										}
 										else if (bytes_in_each_channel == 2) {
 											data_in_channel = (int16_t)
-																(data_buffer[0] 		| 
+																(data_buffer[0] 		|
 																(data_buffer[1] << 8) );
 
 											if (DEBUG_PRINT_ALL_SAMPLES) printf("%02x%02x = %d\n", data_buffer[1], data_buffer[0], data_in_channel);
@@ -566,7 +566,7 @@ oscillator / lfo: %s\n", input_wav_dir, spherename, output_filename, table_autho
 											data_in_channel = data_in_channel_8 - 128;
 											if (DEBUG_PRINT_ALL_SAMPLES) printf("%02x = %d = %d\n", data_buffer[0], data_in_channel_8, data_in_channel);
 										}
-								
+
 										if (data_in_channel < low_limit || data_in_channel > high_limit){
 											if (DEBUG_PRINT_ALL_SAMPLES) printf("**value out of range\n");
 										}
@@ -601,16 +601,16 @@ oscillator / lfo: %s\n", input_wav_dir, spherename, output_filename, table_autho
 									break;
 								}
 							}
-						} 
+						}
 						printf("- Stereo -> Mono\n");
 
-					} 
+					}
 
 				}
 				else{
 					printf("ERROR: Not PCM \n");
-				}	
-			
+				}
+
 
 
 //					plot_wavetable("RAW",wavetable[l].data);
@@ -624,12 +624,12 @@ oscillator / lfo: %s\n", input_wav_dir, spherename, output_filename, table_autho
 								(i!=0) && (i<FILE_TABLELEN-1)){
 								wavetable[l].data[i] = (wavetable[l].data[i-1] + wavetable[l].data[i+1])/2;
 							}
-						}	
+						}
 					}
 // 						plot_wavetable("SMOOTH",wavetable[l].data);
 				}
-							
-				if (do_remove_DC_offset){			
+
+				if (do_remove_DC_offset){
 					// DETECT DC OFFSET
 					sum_buf=0;
 					for (i=0; i<FILE_TABLELEN; i++){
@@ -645,7 +645,7 @@ oscillator / lfo: %s\n", input_wav_dir, spherename, output_filename, table_autho
 // 						plot_wavetable("WINDOW",wavetable[l].data);
 				}
 
-				if (do_remove_DC_offset){			
+				if (do_remove_DC_offset){
 					// REMOVE DC OFFSET
 					for (i=0; i<FILE_TABLELEN; i++){
 						wavetable[l].data[i] -= (sum_buf/FILE_TABLELEN);
@@ -656,37 +656,37 @@ oscillator / lfo: %s\n", input_wav_dir, spherename, output_filename, table_autho
 				// FIXME: APPLY LPF
 				// maybe this needs to be a band pass
 
-				if (do_normalize){					
+				if (do_normalize){
 					// FIND MAX AMPLITUDE
 					maxval_buf =0;
 					for (i=0; i<FILE_TABLELEN; i++){
 						if (abs(wavetable[l].data[i]) > maxval_buf){
 							maxval_buf = abs(wavetable[l].data[i]);
-						} 
-					}				
+						}
+					}
 
-					// NORMALIZE WAVEFORM GAIN 
+					// NORMALIZE WAVEFORM GAIN
 					// save to wavetable
 					for (i=0; i<FILE_TABLELEN; i++){
 						wavetable[l].data[i] /= maxval_buf;
-					}	
+					}
 					printf("- Normalization -> saved to wavetable\n");
 //	 					plot_wavetable("NORMALIZED",wavetable[l].data);
 				}
-				
+
 
 				// ASSIGN COORDINATES
-				
+
 				// PLOT WAVETABLES
 				//plot_wavetable(dir->d_name,dof,wavetable[l].data);
 
 				// SAVE WAVEFORM TO INDIVIDUAL FILE
 // 				print_waveform_to_file(wavetable[k]);
-			
+
 				printf("\nClosing file..\n");
 				fclose(ptr);
-				
-				
+
+
 				// UPDATE COORDINATES
 				cx  += 1;
 				if (cx == wavetable[0].max_dimension){
@@ -702,12 +702,12 @@ oscillator / lfo: %s\n", input_wav_dir, spherename, output_filename, table_autho
 						}
 					}
 				}
-				
+
 				//Advance to next wavetable[] element
 				l += 1;
 
 				maxval_buf=0;
-		
+
 			}
 		}
 		closedir(d);
@@ -719,10 +719,6 @@ oscillator / lfo: %s\n", input_wav_dir, spherename, output_filename, table_autho
 
 
 }
-	
-	
-
-
 
 
 
@@ -738,9 +734,9 @@ void print_wavetable_to_file(char *filename, char *input_wav_dir, char *spherena
 
 	freopen(filename, "w", stdout);
 
-	
+
 	if(strcmp(osc_lfo,"OSC")==0){
-		
+
 		printf("// This file generated with wavecalc\n");
 		printf("// Authors: Hugo Paris, hugoplho@gmail.com, Dan Green danngreen1@gmail.com \n//\n");
 		printf("// 1) Place this file into SWN_PROJECT_DIR/inc/spheres/\n");
@@ -755,8 +751,8 @@ void print_wavetable_to_file(char *filename, char *input_wav_dir, char *spherena
 
 		for (bank=0; bank<wavetable[0].num_banks; bank++){
 
-			printf("\nconst o_waveform %s[WT_DIM_SIZE][WT_DIM_SIZE][WT_DIM_SIZE] = \n\n", spherename);  
-		
+			printf("\nconst o_waveform %s[WT_DIM_SIZE][WT_DIM_SIZE][WT_DIM_SIZE] = \n\n", spherename);
+
 			i=0;
 			printf("{\n");
 
@@ -781,7 +777,7 @@ void print_wavetable_to_file(char *filename, char *input_wav_dir, char *spherena
 
 						//Double the table if we only read 256 (we need 512 for SWN code)
 						if ((FILE_TABLELEN*2) == OUTPUT_TABLELEN){
-							for (l=0; l<FILE_TABLELEN; l++){	
+							for (l=0; l<FILE_TABLELEN; l++){
 								printf(",%d", wavetable[i].data[l]);
 							}
 						}
@@ -807,10 +803,10 @@ void print_wavetable_to_file(char *filename, char *input_wav_dir, char *spherena
 
 		printf("// This file generated with wavecalc\n");
 		printf("// Authors: Hugo Paris, hugoplho@gmail.com, Dan Green danngreen1@gmail.com \n//\n");
-		
-		printf("\n\n// 1) SLPLIT LFO_WAVETABLE[][] ARRAY INTO BANKS BY UPDATING LFO_TO_BANK_END ARRAY BELOW\n");
-		printf("// 2) Comment out enused waveforms and remove coma at end of last waveform \n");
-		printf("// 3 Update value for NUM_LFO_GROUPS in lfo_wavetable_bank.h\n");
+
+		printf("\n\n// 1) SPLIT LFO_WAVETABLE[][] ARRAY INTO BANKS BY UPDATING LFO_TO_BANK_END ARRAY BELOW\n");
+		printf("// 2) Comment out unused waveforms and remove coma at end of last waveform \n");
+		printf("// 3) Update value for NUM_LFO_GROUPS in lfo_wavetable_bank.h\n");
 		printf("// 4) Copy the content of this file into src/lfo_wavetable_bank.c/\n");
 
 		printf("// -------------------------------------------------------\n//\n");
@@ -823,19 +819,20 @@ void print_wavetable_to_file(char *filename, char *input_wav_dir, char *spherena
 		printf("#include \"arm_math.h\" \n#include \"lfo_wavetable_bank.h\"\n");
 		printf("\nuint8_t LFOS_TO_BANK_END[NUM_LFO_GROUPS] = {4, 10, 16, 22, NUM_LFO_SHAPES};\n");
 
-		
+
 		for (bank=0; bank<wavetable[0].num_banks; bank++){
 
 			printf("\nconst uint8_t lfo_wavetable[NUM_LFO_SHAPES][LFO_TABLELEN] = \n{ \n");
+
 			i=0;
 
 			for (layer=0; layer<wavetable[0].max_dimension; layer++){
 
 				for (row=0; row<wavetable[0].max_dimension; row++){
-					
+
 					m=2;
 					for (element=0; element<wavetable[0].max_dimension; element++){
-						
+
 						printf("\t{%d", 0);
 						for (l=1; l<FILE_TABLELEN-1; l++){
 							if(m==2){printf(",%d", wavetable[i].data[l]); m=0;}
@@ -908,14 +905,14 @@ void plot_wavetable(char plot_title[1024], int dof, float waveform[NUM_WAV_WAVEF
 	// PLOT WAVETABLES
 	// code inspired by following stackoverflow thread:
 	// http://stackoverflow.com/questions/3521209/making-c-code-plot-a-graph-automatically
-	
+
 // 	char tablelen[15];
 // 	sprintf(tablelen, "%d", TABLELEN);
 
 	char *gnuplot_Settings = "gnuplot -p -e \" "
 							 "set terminal x11 size 1200,750 enhanced font 'Verdana,10' persist;"
 							 "set border linewidth 1.5;"
-// 							 "set yrange [0:512];"							 
+// 							 "set yrange [0:512];" 
 // 							 "set yrange [-1:1];"
 							 "set style line 1 linecolor rgb '#DC143C' linetype 1 linewidth 2;"
 							 "set style line 2 linecolor rgb '#228B22' linetype 1 linewidth 2;"
@@ -925,12 +922,12 @@ void plot_wavetable(char plot_title[1024], int dof, float waveform[NUM_WAV_WAVEF
 // 	strcat(gnuplot_Settings, tablelen);
 // 	strcat(gnuplot_Settings,"];");
 	int i;
-	int ret;							 				
+	int ret;
 	char gnuplot_Commands[800];
 	strcpy(gnuplot_Commands, gnuplot_Settings);
 	strcat(gnuplot_Commands, "set title \'");
 	strcat(gnuplot_Commands, plot_title);
-	strcat(gnuplot_Commands, "\' ; ");		
+	strcat(gnuplot_Commands, "\' ; ");
 	if (dof==0){
  		strcat(gnuplot_Commands, "plot \'data.temp\' with lines linestyle 1;\"");
 	}
@@ -940,7 +937,7 @@ void plot_wavetable(char plot_title[1024], int dof, float waveform[NUM_WAV_WAVEF
 	else if (dof==2){
  		strcat(gnuplot_Commands, "plot \'data.temp\' with lines linestyle 3;\"");
 	}
-	
+
 	// Write data to temporary file
  	FILE * temp = fopen("tmp/data.temp", "w");
 	FILE * gnuplotPipe = popen ("gnuplot -persistent", "w");
