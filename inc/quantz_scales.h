@@ -36,11 +36,20 @@
 
 enum scaleMap{
 	sclm_NONE,		//0
-	sclm_MAJOR,		//1
-	sclm_MINOR,		//2
-	sclm_SEMITONES,	//3
+        sclm_SEMITONES,         //1
+	sclm_MAJOR,		//2
+	sclm_MINOR,		//3
+	sclm_MIN7,		//4
+	sclm_DIM7,		//5
+	sclm_OCTATONIC1,	//6
+	sclm_OCTATONIC2,	//7
+	sclm_MAJOR_PENTATONIC,	//8
+	sclm_MINOR_PENTATONIC,	//9
+	sclm_WHOLETONE,		//10
+	sclm_LYDIAN,		//11
+	sclm_MIXOLYDIAN,	//12
 
-	NUM_QTZ_SCALES	//4
+	NUM_QTZ_SCALES		//13
 };
 
 void init_quantz_scales(void);
