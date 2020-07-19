@@ -2,7 +2,7 @@
 
 Firmware for the Spherical Wavetable Navigator, a Eurorack-format module from 4ms Company.
 
-This fork modifies the LFO shapes (see wiki : https://github.com/tsointsoin/SWN/wiki ) and adds additional scales.
+This fork modifies the LFO shapes and adds additional scales (see wiki : https://github.com/tsointsoin/SWN/wiki ).
 
 ## Setting up your environment
 You need to install the GCC ARM toolchain.
