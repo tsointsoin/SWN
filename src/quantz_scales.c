@@ -51,20 +51,16 @@
 
 
 const enum colorCodes qtz_scale_colors[NUM_QTZ_SCALES] = {
-	ledc_LIGHT_BLUE,			// NO QTZ
-	ledc_BRIGHTPINK,			// SEMITONE
-	ledc_CORAL,				// MAJOR
-	ledc_BLUE,				// MINOR HARMONIC
-	ledc_MED_RED,				// MIN7
-	ledc_RED,				// DIM7
-	ledc_MED_GREEN,				// OCTATONIC1
-	ledc_GREEN,				// OCTATONIC2
-	ledc_MED_BLUE,				// MAJOR_PENTATONIC
-	ledc_BLUE,				// MINOR_PENTATONI
-	ledc_DIM_GREEN,				// WHOLETONE
-	ledc_DIM_RED,				// LYDIAN
-	ledc_DIM_YELLOW				// MIXOLYDIAN
-
+	ledc_WHITE,		                // NO QTZ
+	ledc_PURPLE,	          		// SEMITONE
+	ledc_YELLOW,				// MAJOR
+	ledc_DIM_YELLOW,			// MINOR HARMONIC
+        ledc_DEEP_BLUE,      			// MAJOR_PENTATONIC
+	ledc_MED_BLUE,     			// MINOR_PENTATONIC
+	ledc_GREEN,	           		// OCTATONIC1
+	ledc_DIM_GREEN,				// OCTATONIC2
+	ledc_FULLRED,				// LYDIAN
+        ledc_DIM_RED                            // MIXOLYDIAN
 };
 
 
@@ -73,13 +69,10 @@ const uint8_t num_qtz_steps[NUM_QTZ_SCALES] = {
 	12,					// SEMITONES
 	7,					// MAJOR
 	7,					// MINOR HARMONIC
-	4,					// MIN7
-	4,					// DIM7
-	8,					// OCTATONIC1
-	8,					// OCTATONIC2
 	5,					// MAJOR_PENTATONIC
 	5,					// MINOR_PENTATONIC
-	6,					// WHOLETONE
+	8,					// OCTATONIC1
+	8,					// OCTATONIC2
 	7,					// LYDIAN
 	7					// MIXOLYDIAN
 
@@ -130,21 +123,6 @@ const float qtz_scales[NUM_QTZ_SCALES][MAX_NUM_QTZ_STEPS] = {
 		29.135234375,	// A#
 		30.8676953125	// B
 	},
-// MIN7
-        {
-            16.3516015625,
-            19.4454296875,
-            24.4997265625,
-            29.135234375
-        },
-
-// DIM7
-        {
-            16.3516015625,
-            19.4454296875,
-            23.1246484375,
-            27.50
-        },
 
 // OCTATONIC1
         {
@@ -185,16 +163,6 @@ const float qtz_scales[NUM_QTZ_SCALES][MAX_NUM_QTZ_STEPS] = {
             19.4454296875,
             21.8267578125,
             24.4997265625,
-            29.135234375
-        },
-
-// WHOLETONE
-        {
-            16.3516015625,
-            18.3540234375,
-            20.60171875,
-            23.1246484375,
-            25.9565625,
             29.135234375
         },
 
