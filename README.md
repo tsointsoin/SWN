@@ -3,6 +3,13 @@
 Firmware for the Spherical Wavetable Navigator, a Eurorack-format module from 4ms Company.
 
 This fork modifies the LFO shapes and adds additional scales (see wiki : https://github.com/tsointsoin/SWN/wiki ).
+Stereo handling is also modified :
+- Channel A is panned 90% left and 10% right
+- Channel B is panned 75% left and 25% right
+- Channel C is panned 60% left and 40% right
+- Channel D is panned 40% left and 60% right
+- Channel E is panned 25% left and 75% right
+- Channel F is panned 10% left and 90% right
 
 ## Setting up your environment
 You need to install the GCC ARM toolchain.
