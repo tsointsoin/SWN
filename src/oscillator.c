@@ -117,14 +117,35 @@ void process_audio_block_codec(int32_t *src, int32_t *dst)
 			interpolated_level += level_inc;
 
 			if (chan==0)
-				output_buffer_odds[i_sample] = smpl;
+			{
+				output_buffer_odds[i_sample] = smpl * 0.90;
+				output_buffer_evens[i_sample] = smpl * 0.10;
+			}
 			else if (chan==1)
-				output_buffer_evens[i_sample] = smpl;
-			else if (chan & 1) //3,5
-				output_buffer_evens[i_sample] += smpl;
-			else //2,4
-				output_buffer_odds[i_sample] += smpl;
-			
+			{
+				output_buffer_odds[i_sample] += smpl * 0.75;  
+				output_buffer_evens[i_sample] += smpl * 0.25;
+			}
+			else if (chan==2)
+			{
+                           	output_buffer_odds[i_sample] += smpl * 0.60;
+				output_buffer_evens[i_sample] += smpl * 0.40;
+			}
+			else if (chan==3)
+			{
+				output_buffer_odds[i_sample] += smpl * 0.40;
+				output_buffer_evens[i_sample] += smpl * 0.60;
+			}
+			else if (chan==4)
+			{
+				output_buffer_odds[i_sample] += smpl * 0.25;
+				output_buffer_evens[i_sample] += smpl * 0.75;
+			}
+			else
+			{
+				output_buffer_odds[i_sample] += smpl * 0.10;
+				output_buffer_evens[i_sample] += smpl * 0.90;
+			}
 			if (chan==5)
 			{
 				outL=0;
