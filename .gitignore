@@ -11,3 +11,4 @@ wavetable/formant_library_calc/make-waveform-library
 calc/wavecalc
 calc/LFO_LFO.h
 calc/plot.py
+export_python
