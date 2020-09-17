@@ -52,6 +52,7 @@ enum ongoingDisplays{
 	ONGOING_DISPLAY_FX,
 	ONGOING_DISPLAY_SPHERE_SEL,
 	ONGOING_DISPLAY_SPHERE_PLAYEXPORT,
+	ONGOING_DISPLAY_SELBUS,
 
 	NUM_ONGOING_DISPLAYS
 };
@@ -78,6 +79,9 @@ typedef struct o_led_cont{
 	
 static inline uint8_t lock_flash_state(void) {
 	return (((HAL_GetTick()/TICKS_PER_MS) & 0xFF) > 200);
+}
+static inline uint8_t cached_param_flash_state(void) {
+	return (((HAL_GetTick()/TICKS_PER_MS) & 0x3FF) > 0x3F0);
 }
 
 void 		init_led_cont(void);
@@ -129,6 +133,7 @@ void 		start_ongoing_display_globright(void);
 void 		start_ongoing_display_fx(void);
 void		start_ongoing_display_sphere_sel(void);
 void 		start_ongoing_display_sphere_play_export(void);
+void 		start_ongoing_display_selbus(void);
 void 		stop_all_displays(void);
 
 

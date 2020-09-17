@@ -25,6 +25,7 @@ SOURCES  += $(wildcard $(PERIPH)/src/*.c)
 SOURCES  += $(DEVICE)/src/$(STARTUP)
 SOURCES  += $(DEVICE)/src/$(SYSTEM)
 SOURCES  += $(wildcard src/*.c)
+SOURCES  += $(wildcard src/*.cc)
 SOURCES  += $(wildcard src/drivers/*.c)
 SOURCES  += $(wildcard $(CORE)/src/*.c)
 SOURCES  += $(wildcard $(CORE)/src/*.s)
@@ -95,7 +96,6 @@ LDSCRIPT = $(DEVICE)/$(LOADFILE)
 
 LFLAGS =  -Wl,-Map,build/main.map,--cref \
 	-Wl,--gc-sections \
-	-Wl,--start-group \
 	$(MCU) \
 	-T $(LDSCRIPT)
 	# -specs=nano.specs -T $(LDSCRIPT) \
@@ -188,7 +188,10 @@ LFLAGS =  -Wl,-Map,build/main.map,--cref \
 # build/src/sphere_flash_io.o: OPTFLAG = -O0
 # build/src/wavetable_play_export.o: OPTFLAG = -O0
 
-
+# Sel Bus
+# build/src/drivers/uart_driver.o: OPTFLAG = -O0
+# build/src/sel_bus.o: OPTFLAG = -O0
+# build/stm32/periph/src/stm32f7xx_hal_uart.o: OPTFLAG = -O0
 #-----------------------------------
 
 
@@ -212,7 +215,7 @@ $(HEX): $(ELF)
 
 $(ELF): $(OBJECTS) 
 	@echo "Linking..."
-	@$(LD) $(LFLAGS) -o $@ $(OBJECTS)
+	@$(LD) $(LFLAGS) -o $@ -Wl,--start-group $(OBJECTS) -Wl,--end-group
 
 $(BUILDDIR)/%.o: %.c $(BUILDDIR)/%.d
 	@mkdir -p $(dir $@)
@@ -247,13 +250,8 @@ endif
 
 wav: fsk-wav
 
-qpsk-wav: $(BIN)
-	python stm_audio_bootloader/qpsk/encoder.py \
-		-t stm32f4 -s 48000 -b 12000 -c 6000 -p 256 \
-		$(BIN)
-
 fsk-wav: $(BIN)
-	python stm_audio_bootloader/fsk/encoder.py \
+	export PYTHONPATH='.' && python2 stm_audio_bootloader/fsk/encoder.py \
 		-s 44100 -b 16 -n 8 -z 4 -p 256 -g 16384 -k 1800 \
 		$(BIN)
 

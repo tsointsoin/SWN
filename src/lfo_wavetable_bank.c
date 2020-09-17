@@ -4,7 +4,7 @@
 // Wavetable name: 2018_08_05_HP_BetaTest_LFO_BANKS
 // Wavetable by: Hugo Paris hugoplho@gmail.com
 
-#include "arm_math.h" 
+#include "arm_math.h"
 #include "lfo_wavetable_bank.h"
 
 uint8_t LFOS_TO_BANK_END[NUM_LFO_GROUPS] = {5, 10, 16, 22, 28};

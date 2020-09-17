@@ -50,12 +50,12 @@
 #include "timekeeper.h"
 #include "drivers/mono_led_driver.h"
 #include "hardware_tests.h"
-#include "bootloader_utils.h"
 #include "hal_handlers.h"
 #include "sphere_flash_io.h"
 #include "system_settings.h"
 #include "preset_manager.h"
 #include "preset_manager_UI.h"
+#include "preset_manager_selbus.h"
 #include "compressor.h"
 #include "ui_modes.h"
 #include "quantz_scales.h"
@@ -69,12 +69,13 @@
 #include "analog_conditioning.h"
 #include "UI_conditioning.h"
 #include "drivers/flashram_spidma.h"
+#include "sel_bus.h"
 
 
 
 //Private functions:
 void SystemClock_Config(void);
-
+void SetVectorTable(uint32_t reset_address);
 
 extern enum 	UI_Modes ui_mode;
 
@@ -95,7 +96,9 @@ int main(void)
 	SystemClock_Config();
 	//FLASH_OB_BootAddressConfig(OPTIONBYTE_BOOTADDR_0, OB_BOOTADDR_ITCM_FLASH);
 
-	SCB_DisableICache(); //not needed because we're running from FLASH on the ITCM bus, using ART and Prefetch
+	SCB_InvalidateICache();
+	SCB_EnableICache();
+	//SCB_DisableICache(); //not needed because we're running from FLASH on the ITCM bus, using ART and Prefetch
 
 	SCB_InvalidateDCache();
 	SCB_EnableDCache();
@@ -125,6 +128,8 @@ int main(void)
 	init_pwm_leds();
 
 	HAL_Delay(80);
+
+	selBus_Init();
 
 	// Initialize starting values
 	init_color_palette();
@@ -254,16 +259,18 @@ int main(void)
 
 	start_led_display();
 
+	selBus_Start();
+
 	while(1){
 		read_freq();
 
 		read_switches();
 		update_osc_param_lock();
-
+		read_selbus_buttons();
 		check_ui_mode_requests();
 
 		read_load_save_encoder(); // Call from main loop because it can initiate a preset load/save call to sFLASH. If this is moved to an interrupt, then make sure it's lower priority than WT_INTERP
-		check_bus_sel_event();	// FixMe: call from more adequate location (should be updated at about the data rate)
+		check_sel_bus_event();	// FixMe: call from more adequate location (should be updated at about the data rate)
 
 		if (ui_mode == VOCT_CALIBRATE) process_voct_calibrate_mode();
 
@@ -316,13 +323,15 @@ void SystemClock_Config(void)
 
 
 	//Note: Do not start the SAI clock (I2S) at this time.
-	PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_I2C2 | RCC_PERIPHCLK_I2C1;;
+	PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_UART5|RCC_PERIPHCLK_I2C2 | RCC_PERIPHCLK_I2C1;;
 
 	PeriphClkInitStruct.PLLI2S.PLLI2SP 	= RCC_PLLP_DIV2;
 	PeriphClkInitStruct.PLLI2S.PLLI2SR	= 2;
 
 	PeriphClkInitStruct.I2c2ClockSelection 		= RCC_I2C2CLKSOURCE_PCLK1;
 	PeriphClkInitStruct.I2c1ClockSelection 		= RCC_I2C1CLKSOURCE_PCLK1; //54MHz
+
+	PeriphClkInitStruct.Uart5ClockSelection = RCC_UART5CLKSOURCE_PCLK1;
 
 	if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
 	{
@@ -342,4 +351,8 @@ void SystemClock_Config(void)
 	HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 }
 
+void SetVectorTable(uint32_t reset_address)
+{ 
+	SCB->VTOR = reset_address & (uint32_t)0x1FFFFF80;
+}
 
