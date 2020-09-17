@@ -7,7 +7,45 @@
 #include "arm_math.h"
 #include "lfo_wavetable_bank.h"
 
-uint8_t LFOS_TO_BANK_END[NUM_LFO_GROUPS] = {5, 10, 16, 22, 28};
+const uint8_t lfo_sustain_pos[NUM_LFO_SHAPES] = {
+	// ramps 1, 3/4, 1/2, 1/4, 1/8
+	5,
+	1,
+	1,
+	1,
+	1,
+
+	// rythmic waveshapes
+	243,
+	192,
+	128,
+	64,
+	32,
+
+	// sine, triangle, ramp, log_ramp, log_inv_ramp, offset
+	133,
+	134,
+	80,
+	12,
+	192,
+	128,
+
+	// CPX SHAPES #1
+	22,
+	11,
+	14,
+	11,
+	18,
+	13,
+
+	// CPX SHAPES #2
+	9,
+	11,
+	11,
+	23,
+	11,
+	41,
+};
 
 const uint8_t lfo_wavetable[NUM_LFO_SHAPES][LFO_TABLELEN] =
 {
