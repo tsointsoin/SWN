@@ -9,42 +9,42 @@
 
 const uint8_t lfo_sustain_pos[NUM_LFO_SHAPES] = {
 	// ramps 1, 3/4, 1/2, 1/4, 1/8
-	5,
-	1,
-	1,
-	1,
-	1,
+	25,
+	25,
+	25,
+	25,
+	25,
 
 	// rythmic waveshapes
-	243,
-	192,
-	128,
-	64,
-	32,
+	100,
+	50,
+	110,
+	48,
+	50,
 
 	// sine, triangle, ramp, log_ramp, log_inv_ramp, offset
-	133,
-	134,
-	80,
-	12,
-	192,
+	128,
+	128,
+	254,
+	254,
+	128,
 	128,
 
 	// CPX SHAPES #1
-	22,
-	11,
-	14,
-	11,
-	18,
-	13,
+	120,
+	125,
+	110,
+	100,
+	110,
+	50,
 
 	// CPX SHAPES #2
-	9,
-	11,
-	11,
-	23,
-	11,
-	41,
+	105,
+	115,
+	135,
+	120,
+	128,
+	100,
 };
 
 const uint8_t lfo_wavetable[NUM_LFO_SHAPES][LFO_TABLELEN] =
